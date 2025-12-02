@@ -1,0 +1,14 @@
+node_modules
+www
+dist
+.angular
+.ionic
+npm-debug.log
+coverage
+android
+ios
+.capacitor
+.vscode
+.idea
+*.swp
+.DS_Store

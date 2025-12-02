@@ -42,7 +42,21 @@ Production-ready system for remotely controlling an elevator unlock relay throug
 - **Tech**: Arduino framework + PlatformIO
 - **Features**: Server polling, PULSE mode,  LED/relay control
 
-## 🚀 Quick Start
+## 🐳 Docker Deployment (Recommended)
+
+**Quick start with Docker:**
+```bash
+docker-compose up -d
+```
+
+Access:
+- **Web App**: http://localhost:8080
+- **API**: http://localhost:3000
+- **Default login**: admin@remotecon.local / admin123
+
+For detailed Docker instructions, see [`DOCKER.md`](file:///c:/Git/remotecon/DOCKER.md).
+
+## 🚀 Quick Start (Manual)
 
 ### 1. Backend Setup
 

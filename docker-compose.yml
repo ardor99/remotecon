@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: remotecon-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: remotecon
+      POSTGRES_PASSWORD: remotecon_password_change_this
+      POSTGRES_DB: remotecon
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - remotecon-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U remotecon" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: remotecon-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://remotecon:remotecon_password_change_this@postgres:5432/remotecon?schema=public
+      JWT_ACCESS_SECRET: your-super-secret-jwt-access-key-change-this-in-production
+      JWT_REFRESH_SECRET: your-super-secret-jwt-refresh-key-change-this-in-production
+      JWT_ACCESS_EXPIRATION: 15m
+      JWT_REFRESH_EXPIRATION: 7d
+      PORT: 3000
+      CORS_ORIGIN: http://localhost,http://localhost:8080
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - remotecon-network
+    command: >
+      sh -c "npx prisma migrate deploy &&
+             npx prisma db seed &&
+             npm run start:prod"
+
+  # Frontend Web App
+  frontend:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: remotecon-frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - remotecon-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  remotecon-network:
+    driver: bridge

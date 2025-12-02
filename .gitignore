@@ -45,3 +45,8 @@ esp32/build/
 
 # OS
 Thumbs.db
+
+# Docker
+.env
+docker-compose.override.yml
+*.sql
