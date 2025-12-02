@@ -16,7 +16,8 @@ export class DevicesController {
         return this.devicesService.getAllDevices();
     }
 
-    @Get('admin/devices')
+    // Admin endpoint must come BEFORE :id routes to avoid conflicts
+    @Get('admin/list')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('ADMIN')
     async getDevicesWithState() {

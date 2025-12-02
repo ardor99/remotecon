@@ -17,7 +17,7 @@ export class DevicesPage implements OnInit {
     }
 
     loadDevices() {
-        this.http.get<any[]>(`${environment.apiUrl}/admin/devices`).subscribe({
+        this.http.get<any[]>(`${environment.apiUrl}/devices/admin/list`).subscribe({
             next: (devices) => {
                 this.devices = devices;
             },
