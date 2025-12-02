@@ -45,10 +45,7 @@ services:
         condition: service_healthy
     networks:
       - remotecon-network
-    command: >
-      sh -c "npx prisma migrate deploy &&
-             npx prisma db seed &&
-             npm run start:prod"
+    entrypoint: [ "/bin/sh", "/app/docker-entrypoint.sh" ]
 
   # Frontend Web App
   frontend:
