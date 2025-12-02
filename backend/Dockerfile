@@ -34,13 +34,10 @@ RUN npm install --omit=dev
 # Copy built application from builder
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-
-# Copy entrypoint script
-COPY docker-entrypoint.sh /app/docker-entrypoint.sh
-RUN chmod +x /app/docker-entrypoint.sh
+COPY prisma ./prisma
 
 # Expose port
 EXPOSE 3000
 
-# Start the application
-CMD ["npm", "run", "start:prod"]
+# Start command
+CMD ["sh", "-c", "sleep 5 && npx prisma migrate dev --name init && node dist/main"]
