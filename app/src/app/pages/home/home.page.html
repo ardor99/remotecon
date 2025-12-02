@@ -1,0 +1,74 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>Elevator Control</ion-title>
+        <ion-buttons slot="end">
+            <ion-button routerLink="/settings">
+                <ion-icon name="settings-outline"></ion-icon>
+            </ion-button>
+            <ion-button *ngIf="currentUser?.role === 'ADMIN'" routerLink="/admin/users">
+                <ion-icon name="people-outline"></ion-icon>
+            </ion-button>
+            <ion-button (click)="logout()">
+                <ion-icon name="log-out-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+    <div class="control-container">
+        <div class="status-card">
+            <h2>Switch Status</h2>
+            <div class="status-indicator" [class.active]="switchState?.isActive">
+                <ion-icon [name]="switchState?.isActive ? 'radio-button-on' : 'radio-button-off'"></ion-icon>
+                <h1>{{ switchState?.isActive ? 'ON' : 'OFF' }}</h1>
+            </div>
+
+            <p *ngIf="switchState?.isActive && switchState?.mode === 'PULSE'">
+                Mode: PULSE ({{ switchState.pulseIntervalSeconds }}s interval)
+            </p>
+
+            <div *ngIf="remainingTime" class="remaining-time">
+                <ion-icon name="time-outline"></ion-icon>
+                <span>Time remaining: {{ remainingTime }}</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <h3>Manual Control</h3>
+            <ion-button expand="block" color="success" (click)="enableSwitch()" [disabled]="switchState?.isActive">
+                <ion-icon slot="start" name="unlock-outline"></ion-icon>
+                Enable Switch
+            </ion-button>
+
+            <ion-button expand="block" color="danger" (click)="disableSwitch()" [disabled]="!switchState?.isActive">
+                <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
+                Disable Switch
+            </ion-button>
+        </div>
+
+        <div class="auto-controls">
+            <h3>Auto-Unlock Settings</h3>
+
+            <ion-item>
+                <ion-label>
+                    <h2>GPS Auto-Unlock</h2>
+                    <p>Activate for 20 min when arriving home</p>
+                </ion-label>
+                <ion-toggle [(ngModel)]="gpsAutoEnabled"></ion-toggle>
+            </ion-item>
+
+            <ion-item>
+                <ion-label>
+                    <h2>WiFi Auto-Unlock</h2>
+                    <p>Activate for 10 min when connecting to home WiFi</p>
+                </ion-label>
+                <ion-toggle [(ngModel)]="wifiAutoEnabled"></ion-toggle>
+            </ion-item>
+
+            <ion-note class="ion-padding">
+                Configure your home location and WiFi networks in Settings
+            </ion-note>
+        </div>
+    </div>
+</ion-content>

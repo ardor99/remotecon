@@ -1,0 +1,53 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="/home"></ion-back-button>
+        </ion-buttons>
+        <ion-title>Settings</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+    <div class="settings-container">
+        <h2>Home Location</h2>
+        <ion-item>
+            <ion-label position="floating">Latitude</ion-label>
+            <ion-input type="number" [(ngModel)]="homeLatitude"></ion-input>
+        </ion-item>
+
+        <ion-item>
+            <ion-label position="floating">Longitude</ion-label>
+            <ion-input type="number" [(ngModel)]="homeLongitude"></ion-input>
+        </ion-item>
+
+        <ion-button expand="block" (click)="setCurrentLocation()" class="ion-margin-top">
+            <ion-icon slot="start" name="locate"></ion-icon>
+            Use Current Location
+        </ion-button>
+
+        <ion-item>
+            <ion-label position="floating">Radius (meters)</ion-label>
+            <ion-input type="number" [(ngModel)]="homeRadiusMeters"></ion-input>
+        </ion-item>
+
+        <h2 class="ion-margin-top">Home WiFi Networks</h2>
+        <ion-list>
+            <ion-item *ngFor="let ssid of homeWifiSsids">
+                <ion-label>{{ ssid }}</ion-label>
+                <ion-button slot="end" fill="clear" color="danger" (click)="removeWifiSsid(ssid)">
+                    <ion-icon name="trash"></ion-icon>
+                </ion-button>
+            </ion-item>
+        </ion-list>
+
+        <ion-item>
+            <ion-label position="floating">Add WiFi SSID</ion-label>
+            <ion-input [(ngModel)]="newSsid"></ion-input>
+            <ion-button slot="end" (click)="addWifiSsid()">Add</ion-button>
+        </ion-item>
+
+        <ion-button expand="block" color="primary" (click)="saveSettings()" class="ion-margin-top">
+            Save Settings
+        </ion-button>
+    </div>
+</ion-content>

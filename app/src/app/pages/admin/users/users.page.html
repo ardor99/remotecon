@@ -1,0 +1,42 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="/home"></ion-back-button>
+        </ion-buttons>
+        <ion-title>User Management</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+    <ion-segment [(ngModel)]="filter" (ionChange)="loadUsers()">
+        <ion-segment-button value="pending">
+            <ion-label>Pending</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="approved">
+            <ion-label>Approved</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="all">
+            <ion-label>All</ion-label>
+        </ion-segment-button>
+    </ion-segment>
+
+    <ion-list class="ion-margin-top">
+        <ion-item *ngFor="let user of filteredUsers">
+            <ion-label>
+                <h2>{{ user.email }}</h2>
+                <p>Role: {{ user.role }}</p>
+                <p>Status: {{ user.isApproved ? 'Approved' : 'Pending' }}</p>
+            </ion-label>
+            <ion-button *ngIf="!user.isApproved" slot="end" color="success" (click)="approveUser(user.id)">
+                Approve
+            </ion-button>
+            <ion-button *ngIf="user.isApproved" slot="end" color="warning" (click)="rejectUser(user.id)">
+                Revoke
+            </ion-button>
+        </ion-item>
+    </ion-list>
+
+    <ion-note *ngIf="filteredUsers.length === 0" class="ion-text-center ion-margin-top">
+        <p>No users found</p>
+    </ion-note>
+</ion-content>

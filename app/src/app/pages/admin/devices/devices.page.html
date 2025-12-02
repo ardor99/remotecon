@@ -1,0 +1,31 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="/home"></ion-back-button>
+        </ion-buttons>
+        <ion-title>Device Management</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+    <ion-list>
+        <ion-item *ngFor="let device of devices">
+            <ion-label>
+                <h2>{{ device.name }}</h2>
+                <p>ID: {{ device.id }}</p>
+                <p>Status: {{ device.isActive ? 'Active' : 'Inactive' }}</p>
+                <p>Last Poll: {{ formatDate(device.lastPollAt) }}</p>
+                <p *ngIf="device.currentState">
+                    Mode: {{ device.currentState.mode }}
+                </p>
+            </ion-label>
+            <ion-badge slot="end" [color]="device.isActive ? 'success' : 'danger'">
+                {{ device.isActive ? 'Online' : 'Offline' }}
+            </ion-badge>
+        </ion-item>
+    </ion-list>
+
+    <ion-note *ngIf="devices.length === 0" class="ion-text-center ion-margin-top">
+        <p>No devices found</p>
+    </ion-note>
+</ion-content>

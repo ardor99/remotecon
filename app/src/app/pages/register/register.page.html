@@ -1,0 +1,45 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="/login"></ion-back-button>
+        </ion-buttons>
+        <ion-title>Register</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+    <div class="register-container">
+        <h1>Create Account</h1>
+        <p>Register for remote elevator access</p>
+
+        <ion-list>
+            <ion-item>
+                <ion-label position="floating">Email</ion-label>
+                <ion-input type="email" [(ngModel)]="email"></ion-input>
+            </ion-item>
+
+            <ion-item>
+                <ion-label position="floating">Password</ion-label>
+                <ion-input type="password" [(ngModel)]="password"></ion-input>
+            </ion-item>
+
+            <ion-item>
+                <ion-label position="floating">Confirm Password</ion-label>
+                <ion-input type="password" [(ngModel)]="confirmPassword"></ion-input>
+            </ion-item>
+        </ion-list>
+
+        <ion-text color="medium" class="ion-padding">
+            <p><small>Password must be at least 8 characters long.</small></p>
+        </ion-text>
+
+        <ion-button expand="block" (click)="register()" [disabled]="loading">
+            <ion-spinner *ngIf="loading" name="circles"></ion-spinner>
+            <span *ngIf="!loading">Register</span>
+        </ion-button>
+
+        <ion-button expand="block" fill="clear" routerLink="/login">
+            Already have an account? Login
+        </ion-button>
+    </div>
+</ion-content>

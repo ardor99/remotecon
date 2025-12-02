@@ -1,0 +1,97 @@
+// Prisma schema for Remote Elevator Control System
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum SwitchMode {
+  OFF
+  PULSE
+  CONTINUOUS
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String
+  role         Role      @default(USER)
+  isApproved   Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  
+  refreshTokens RefreshToken[]
+  switchStates  SwitchState[]
+  userSettings  UserSettings?
+  
+  @@index([email])
+}
+
+model Device {
+  id        String   @id @default(uuid())
+  name      String
+  deviceKey String   @unique @default(uuid())
+  isActive  Boolean  @default(true)
+  lastPollAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  switchStates SwitchState[]
+  
+  @@index([deviceKey])
+}
+
+model SwitchState {
+  id                   String      @id @default(uuid())
+  deviceId             String
+  mode                 SwitchMode  @default(OFF)
+  pulseIntervalSeconds Int         @default(10)
+  pulseOnMillis        Int         @default(500)
+  validUntil           DateTime?
+  lastUpdatedByUserId  String?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+  
+  device            Device  @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  lastUpdatedByUser User?   @relation(fields: [lastUpdatedByUserId], references: [id])
+  
+  @@index([deviceId])
+  @@index([validUntil])
+}
+
+model UserSettings {
+  id                String   @id @default(uuid())
+  userId            String   @unique
+  homeLatitude      Float?
+  homeLongitude     Float?
+  homeRadiusMeters  Float    @default(200)
+  homeWifiSsids     String[] @default([])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([token])
+  @@index([userId])
+}
