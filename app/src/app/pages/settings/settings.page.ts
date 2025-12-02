@@ -63,8 +63,8 @@ export class SettingsPage implements OnInit {
 
     async saveSettings() {
         const settings = {
-            homeLatitude: this.homeLatitude,
-            homeLongitude: this.homeLongitude,
+            homeLatitude: this.homeLatitude ?? undefined,
+            homeLongitude: this.homeLongitude ?? undefined,
             homeRadiusMeters: this.homeRadiusMeters,
             homeWifiSsids: this.homeWifiSsids,
         };
@@ -72,7 +72,7 @@ export class SettingsPage implements OnInit {
         this.http.patch(`${environment.apiUrl}/users/me/settings`, settings).subscribe({
             next: async () => {
                 // Update services
-                if (this.homeLatitude && this.homeLongitude) {
+                if (this.homeLatitude !== null && this.homeLongitude !== null) {
                     this.geofencingService.initializeGeofencing(settings);
                 }
                 this.wifiService.initializeWifiMonitoring(this.homeWifiSsids);

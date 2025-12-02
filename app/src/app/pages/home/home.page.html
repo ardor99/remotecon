@@ -25,7 +25,7 @@
             </div>
 
             <p *ngIf="switchState?.isActive && switchState?.mode === 'PULSE'">
-                Mode: PULSE ({{ switchState.pulseIntervalSeconds }}s interval)
+                Mode: PULSE ({{ switchState?.pulseIntervalSeconds }}s interval)
             </p>
 
             <div *ngIf="remainingTime" class="remaining-time">
