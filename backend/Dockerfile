@@ -24,20 +24,25 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files and prisma schema
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Install production dependencies only
-RUN npm install --omit=dev
+# Copy node_modules from builder (includes all dependencies and generated client)
+COPY --from=builder /app/node_modules ./node_modules
+
+# Install Prisma CLI globally for migrations  
+RUN npm install -g prisma
 
 # Copy built application from builder
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY prisma ./prisma
+
+# Copy entrypoint script
+COPY docker-entrypoint.js ./
 
 # Expose port
 EXPOSE 3000
 
-# Start command
-CMD ["sh", "-c", "sleep 5 && npx prisma migrate dev --name init && node dist/main"]
+# Start command - test direct start first
+CMD ["node", "dist/main"]
+# CMD ["node", "docker-entrypoint.js"]
