@@ -19,4 +19,4 @@ echo "⏭️  Skipping database seeding for now..."
 
 # Start the application
 echo "🚀 Starting NestJS application..."
-exec node dist/main
+exec node dist/src/main
