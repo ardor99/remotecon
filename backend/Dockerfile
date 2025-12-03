@@ -44,5 +44,5 @@ COPY docker-entrypoint.js ./
 EXPOSE 3000
 
 # Start command - test direct start first
-CMD ["node", "dist/main"]
+CMD ["node", "dist/main.js"]
 # CMD ["node", "docker-entrypoint.js"]
