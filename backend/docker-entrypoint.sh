@@ -11,9 +11,11 @@ sleep 5
 echo "🔄 Running Prisma migrations..."
 npx prisma migrate deploy
 
-# Seed database using the standard seed script
-echo "🌱 Seeding database..."
-npm run seed
+# Seed database using the standard seed script (non-blocking)
+# Temporarily disabled due to ES module configuration issue
+# echo "🌱 Seeding database..."
+# npm run seed || echo "⚠️  Seeding failed or was skipped"
+echo "⏭️  Skipping database seeding for now..."
 
 # Start the application
 echo "🚀 Starting NestJS application..."
