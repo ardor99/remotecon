@@ -34,7 +34,7 @@ async function seedDatabase() {
         const admin = await prisma.user.create({
             data: {
                 email: 'admin@remotecon.local',
-                password: hashedPassword,
+                passwordHash: hashedPassword,
                 role: 'ADMIN',
                 isApproved: true,
             },

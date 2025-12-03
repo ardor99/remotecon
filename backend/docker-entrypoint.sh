@@ -1,13 +1,20 @@
 #!/bin/sh
+set -e
 
-echo "Waiting for database to be ready..."
+echo "🐳 Docker Entrypoint - Starting initialization..."
+
+# Wait for database to be ready
+echo "⏳ Waiting for PostgreSQL to be ready..."
 sleep 5
 
-echo "Running Prisma migrations..."
+# Run Prisma migrations
+echo "🔄 Running Prisma migrations..."
 npx prisma migrate deploy
 
-echo "Seeding database..."
-npx prisma db seed || echo "Seed failed or already seeded"
+# Seed database using the standard seed script
+echo "🌱 Seeding database..."
+npm run seed
 
-echo "Starting application..."
-npm run start:prod
+# Start the application
+echo "🚀 Starting NestJS application..."
+exec node dist/main

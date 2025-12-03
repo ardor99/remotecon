@@ -38,11 +38,11 @@ RUN npm install -g prisma
 COPY --from=builder /app/dist ./dist
 
 # Copy entrypoint script
-COPY docker-entrypoint.js ./
+COPY docker-entrypoint.sh ./
+RUN chmod +x docker-entrypoint.sh
 
 # Expose port
 EXPOSE 5000
 
-# Start command - test direct start first
-CMD ["node", "dist/main.js"]
-# CMD ["node", "docker-entrypoint.js"]
+# Use entrypoint script to run migrations and start app
+ENTRYPOINT ["./docker-entrypoint.sh"]
