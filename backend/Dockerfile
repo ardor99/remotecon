@@ -39,7 +39,7 @@ COPY --from=builder /app/dist ./dist
 
 # Copy entrypoint script
 COPY docker-entrypoint.sh ./
-RUN chmod +x docker-entrypoint.sh
+RUN apk add --no-cache dos2unix && dos2unix docker-entrypoint.sh && chmod +x docker-entrypoint.sh
 
 # Expose port
 EXPOSE 5000
