@@ -19,4 +19,4 @@ echo "⏭️  Skipping database seeding for now..."
 
 # Start the application
 echo "🚀 Starting NestJS application..."
-exec node dist/src/main
+node dist/src/main || { echo "❌ App crashed with exit code $?"; sleep 3600; }
