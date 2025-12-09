@@ -30,12 +30,17 @@ WORKDIR /app
 # Copy package files and prisma schema
 COPY package*.json ./
 COPY prisma ./prisma/
+COPY tsconfig*.json ./
+COPY nest-cli.json ./
 
 # Copy node_modules from builder (includes all dependencies and generated client)
 COPY --from=builder /app/node_modules ./node_modules
 
 # Install Prisma CLI globally for migrations  
 RUN npm install -g prisma
+
+# Include source files so containerized tests (jest) can run
+COPY --from=builder /app/src ./src
 
 # Copy built application from builder
 COPY --from=builder /app/dist ./dist

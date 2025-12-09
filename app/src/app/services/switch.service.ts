@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, interval } from 'rxjs';
-import { switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, interval, EMPTY } from 'rxjs';
+import { switchMap, tap, catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 export interface SwitchState {
@@ -19,30 +19,70 @@ export class SwitchService {
     private currentStateSubject = new BehaviorSubject<SwitchState | null>(null);
     public currentState$ = this.currentStateSubject.asObservable();
 
-    private defaultDeviceId = 'default'; // Will be set from device list
+    private defaultDeviceId: string | null = null;
 
     constructor(private http: HttpClient) {
-        // Poll for state every 5 seconds
-        interval(5000)
-            .pipe(switchMap(() => this.fetchCurrentState()))
-            .subscribe();
+        this.loadDefaultDevice();
+        this.startPolling();
     }
 
     setDefaultDevice(deviceId: string) {
         this.defaultDeviceId = deviceId;
     }
 
+    private startPolling() {
+        interval(5000)
+            .pipe(
+                switchMap(() => this.fetchCurrentState()),
+            )
+            .subscribe();
+    }
+
+    private loadDefaultDevice() {
+        this.http.get<any[]>(`${environment.apiUrl}/devices`)
+            .pipe(
+                tap((devices) => {
+                    if (!devices?.length) {
+                        console.warn('No devices available for current user; skipping switch polling.');
+                        return;
+                    }
+                    if (!this.defaultDeviceId) {
+                        this.defaultDeviceId = devices[0].id;
+                        this.fetchCurrentState().subscribe();
+                    }
+                }),
+                catchError((err) => {
+                    console.error('Failed to load devices for polling', err);
+                    return EMPTY;
+                })
+            )
+            .subscribe();
+    }
+
     fetchCurrentState(): Observable<SwitchState> {
+        if (!this.defaultDeviceId) {
+            return EMPTY as unknown as Observable<SwitchState>;
+        }
+
         return this.http
             .get<SwitchState>(`${environment.apiUrl}/devices/${this.defaultDeviceId}/state`)
             .pipe(
                 tap((state) => {
                     this.currentStateSubject.next(state);
+                }),
+                catchError((err) => {
+                    console.error('Error fetching switch state', err);
+                    return EMPTY;
                 })
             );
     }
 
     enableManual(durationMinutes?: number): Observable<any> {
+        if (!this.defaultDeviceId) {
+            console.warn('No device selected; unable to send manual command.');
+            return EMPTY;
+        }
+
         const body: any = {
             mode: 'PULSE',
             pulseIntervalSeconds: 10,
@@ -61,6 +101,11 @@ export class SwitchService {
     }
 
     disable(): Observable<any> {
+        if (!this.defaultDeviceId) {
+            console.warn('No device selected; unable to disable.');
+            return EMPTY;
+        }
+
         return this.http
             .post(`${environment.apiUrl}/devices/${this.defaultDeviceId}/state/manual`, {
                 mode: 'OFF',
@@ -69,6 +114,11 @@ export class SwitchService {
     }
 
     enableAutoGPS(): Observable<any> {
+        if (!this.defaultDeviceId) {
+            console.warn('No device selected; unable to trigger GPS auto-unlock.');
+            return EMPTY;
+        }
+
         return this.http
             .post(`${environment.apiUrl}/devices/${this.defaultDeviceId}/state/auto`, {
                 trigger: 'GPS',
@@ -78,6 +128,11 @@ export class SwitchService {
     }
 
     enableAutoWiFi(): Observable<any> {
+        if (!this.defaultDeviceId) {
+            console.warn('No device selected; unable to trigger WiFi auto-unlock.');
+            return EMPTY;
+        }
+
         return this.http
             .post(`${environment.apiUrl}/devices/${this.defaultDeviceId}/state/auto`, {
                 trigger: 'WIFI',

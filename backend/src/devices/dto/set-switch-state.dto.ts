@@ -6,6 +6,11 @@ export enum SwitchMode {
     CONTINUOUS = 'CONTINUOUS',
 }
 
+export enum TriggerType {
+    GPS = 'GPS',
+    WIFI = 'WIFI',
+}
+
 export class SetManualSwitchDto {
     @IsEnum(SwitchMode)
     mode: SwitchMode;
@@ -26,8 +31,8 @@ export class SetManualSwitchDto {
 }
 
 export class SetAutoSwitchDto {
-    @IsEnum(['GPS', 'WIFI'])
-    trigger: 'GPS' | 'WIFI';
+    @IsEnum(TriggerType)
+    trigger: TriggerType;
 
     @IsInt()
     @Min(1)

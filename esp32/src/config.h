@@ -9,7 +9,8 @@
 #define WIFI_PASSWORD "YourWiFiPassword"
 
 // Server Configuration
-#define SERVER_URL "http://192.168.1.100:3000/api"  // Replace with your server IP/domain
+// Prefer HTTPS in production; for self-signed certs the firmware uses an insecure TLS client.
+#define SERVER_URL "http://192.168.1.100:3000/api"  // Replace with your server IP/domain (https://your-domain/api)
 #define DEVICE_ID "default"  // Replace with actual device ID from database
 #define DEVICE_KEY "test-device-key-12345"  // Replace with actual device key from database
 

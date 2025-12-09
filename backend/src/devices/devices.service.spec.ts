@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DevicesService } from './devices.service';
+import { TriggerType } from './dto/set-switch-state.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
 describe('DevicesService', () => {
@@ -118,7 +119,7 @@ describe('DevicesService', () => {
             const deviceId = 'device-1';
             const userId = 'user-1';
             const dto = {
-                trigger: 'GPS' as const,
+                trigger: TriggerType.GPS,
                 durationMinutes: 20,
             };
 

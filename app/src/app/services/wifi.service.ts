@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Network } from '@capacitor/network';
+import { Network, ConnectionStatus } from '@capacitor/network';
 import { Capacitor } from '@capacitor/core';
 import { BehaviorSubject } from 'rxjs';
 
@@ -16,7 +16,7 @@ export class WifiService {
     constructor() { }
 
     async initializeWifiMonitoring(homeSSIDs: string[]) {
-        this.homeSSIDs = homeSSIDs;
+        this.homeSSIDs = homeSSIDs || [];
 
         // Only works on mobile
         if (!Capacitor.isNativePlatform()) {
@@ -31,31 +31,51 @@ export class WifiService {
 
         // Check initial state
         const status = await Network.getStatus();
-        this.checkWifiConnection(status);
+        await this.checkWifiConnection(status);
     }
 
-    private checkWifiConnection(status: any) {
-        // Note: Getting SSID is limited on iOS and Android
-        // On Android 10+, requires location permission
-        // On iOS, requires special entitlements
-        // For now, we just check if connected to WiFi
+    private async checkWifiConnection(status: ConnectionStatus) {
         const isWifi = status.connectionType === 'wifi';
 
-        // Detect connecting to WiFi
-        if (isWifi && !this.wasConnected) {
+        if (!isWifi) {
+            this.wasConnected = false;
+            this.connectedToHomeWifi.next(false);
+            return;
+        }
+
+        const ssid = await this.getCurrentSsid(status);
+        const isHome = !!ssid && this.homeSSIDs.includes(ssid);
+
+        // Detect connecting to a trusted WiFi
+        if (isHome && !this.wasConnected) {
             this.onWifiConnected();
         }
 
-        this.wasConnected = isWifi;
-        this.connectedToHomeWifi.next(isWifi);
-
-        // In a real implementation, you would use @capacitor-community/network-info
-        // to get the actual SSID and compare it to homeSSIDs
+        this.wasConnected = isHome;
+        this.connectedToHomeWifi.next(isHome);
     }
 
     private onWifiConnected() {
         console.log('Connected to WiFi');
         // This will be handled by the component/service that subscribes to WiFi events
+    }
+
+    private async getCurrentSsid(status: ConnectionStatus): Promise<string | null> {
+        try {
+            // Capacitor Network API does not expose SSID directly; some platforms
+            // may provide it via status (vendor-specific). If unavailable, we fail
+            // closed and do not auto-unlock.
+            const ssid = (status as any)?.ssid || null;
+
+            if (!ssid) {
+                console.warn('Unable to read WiFi SSID; will not enable auto-unlock.');
+            }
+
+            return ssid;
+        } catch (error) {
+            console.error('Error retrieving WiFi SSID', error);
+            return null;
+        }
     }
 
     stopWifiMonitoring() {

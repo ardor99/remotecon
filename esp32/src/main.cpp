@@ -14,6 +14,7 @@
 
 #include <Arduino.h>
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 #include "config.h"
@@ -93,13 +94,22 @@ void pollServer() {
   if (!wifiConnected) {
     return;
   }
-  
+
   HTTPClient http;
+  bool isHttps = String(SERVER_URL).startsWith("https://");
+  WiFiClientSecure secureClient;
+  WiFiClient plainClient;
   
   // Construct poll URL
   String url = String(SERVER_URL) + "/devices/" + String(DEVICE_ID) + "/poll";
   
-  http.begin(url);
+  if (isHttps) {
+    // For self-signed certificates during development; replace with certificate verification in production
+    secureClient.setInsecure();
+    http.begin(secureClient, url);
+  } else {
+    http.begin(plainClient, url);
+  }
   http.addHeader("Content-Type", "application/json");
   
   // Create JSON payload with deviceKey
