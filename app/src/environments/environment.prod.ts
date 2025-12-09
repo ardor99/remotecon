@@ -1,4 +1,5 @@
 export const environment = {
     production: true,
-    apiUrl: 'http://localhost:5000/api',
+    // Use host.docker.internal to access host machine from Docker container on Windows
+    apiUrl: 'http://host.docker.internal:5000/api',
 };

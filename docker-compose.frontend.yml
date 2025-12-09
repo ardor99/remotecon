@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: remotecon-frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    # Use host network mode on Windows to access localhost backend
+    # For Linux/Mac, use network_mode: "host"
+    # For Windows, the frontend will connect to host.docker.internal
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
