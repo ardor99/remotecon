@@ -25,7 +25,12 @@
                         "inlineStyleLanguage": "scss",
                         "assets": [
                             "src/favicon.ico",
-                            "src/assets"
+                            "src/assets",
+                            {
+                                "glob": "**/*",
+                                "input": "node_modules/ionicons/dist/ionicons/svg",
+                                "output": "svg"
+                            }
                         ],
                         "styles": [
                             "src/theme/variables.scss",
@@ -82,7 +87,12 @@
                         "inlineStyleLanguage": "scss",
                         "assets": [
                             "src/favicon.ico",
-                            "src/assets"
+                            "src/assets",
+                            {
+                                "glob": "**/*",
+                                "input": "node_modules/ionicons/dist/ionicons/svg",
+                                "output": "svg"
+                            }
                         ],
                         "styles": [
                             "src/theme/variables.scss",
